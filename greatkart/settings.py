@@ -137,7 +137,16 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 
+
 from django.contrib.messages import constants as messages
 MESSAGE_TAGS = {
-    messages.INFO: 'danger',
+    messages.ERROR: 'danger',
 }
+
+# SMTP configuration
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'bmzidev@gmail.com'
+EMAIL_HOST_PASSWORD = 'ramz4gl2@CA1!'
+EMAIL_USE_TLS = True
+
