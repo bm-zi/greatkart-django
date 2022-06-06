@@ -146,7 +146,7 @@ MESSAGE_TAGS = {
 # SMTP configuration
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'bmzidev@gmail.com'
-EMAIL_HOST_PASSWORD = 'ramz4gl2@CA1!'
+EMAIL_HOST_USER = 'user_email@gmail.com'
+EMAIL_HOST_PASSWORD = 'user_password'
 EMAIL_USE_TLS = True
 
