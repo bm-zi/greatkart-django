@@ -1,11 +1,46 @@
 from django.shortcuts import render, redirect
 from carts.models import CartItem
-import orders
-from orders.models import Order
 from .forms import OrderForm
 import datetime
+from .models import Order, Payment, OrderProduct
+import json
 
 def payments(request):
+    body = json.loads(request.body)
+    print(body)
+    print("user => ", request.user)
+
+    order = Order.objects.get(user=request.user, is_ordered=False, order_number=body['orderID'])
+    # order = Order.objects.get(order_number=body['orderID'])
+
+    # Store transaction details inside Payment model
+    payment = Payment(
+        user = request.user,
+        payment_id = body['transID'],
+        payment_method = body['payment_method'],
+        amount_paid = order.order_total,
+        status = body['status'],
+    )
+    payment.save()
+
+    order.payment = payment
+    order.is_ordered = True
+    order.save()
+
+    # Move the cart items to Order Product table
+    cart_items = CartItem.objects.filter(user=request.user)
+
+    for item in cart_items:
+        orderproduct = OrderProduct()
+        orderproduct.order_id = order.id
+        orderproduct.payment = payment
+        orderproduct.user_id = request.user.id
+        orderproduct.product_id = item.product_id
+        orderproduct.quantity = item.quantity
+        orderproduct.product_price = item.product.price
+        orderproduct.ordered = True
+        orderproduct.save()
+
     return render(request, 'orders/payments.html')
 
 
