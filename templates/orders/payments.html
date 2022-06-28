@@ -140,11 +140,12 @@
         return cookieValue;
     }
 
-    var amount = "{{ grand_total }}"
-    var url = "{% url 'payments' %}"
-    var csrftoken = getCookie('csrftoken')
-    var orderID = "{{order.order_number}}"
-    var payment_method = 'PayPal'
+	var amount = "{{ grand_total }}"
+	var url = "{% url 'payments' %}"
+	var csrftoken = getCookie('csrftoken');
+	var orderID = "{{order.order_number}}"
+	var payment_method = 'PayPal'
+    var redirect_url = "{% url 'order_complete' %}"
 
     // Render the PayPal button into #paypal-button-container
     paypal.Buttons({
@@ -156,16 +157,16 @@
                 height: 40
             },
 
-        // Set up the transaction
-        createOrder: function(data, actions) {
-            return actions.order.create({
-                purchase_units: [{
-                    amount: {
-                        value: amount,
-                    }
-                }]
-            });
-        },
+		// Set up the transaction
+		createOrder: function(data, actions) {
+			return actions.order.create({
+				purchase_units: [{
+					amount: {
+						value: amount,
+					}
+				}]
+			});
+		},
 
         // Finalize the transaction
         onApprove: function(data, actions) {
@@ -175,10 +176,10 @@
                 sendData();
                 function sendData(){
                     fetch(url, {
-                        method : "post",
+                        method : "POST",
                         headers:{
-                            "Content-type": "application:/json",
-                            "X-CSRFToken": csrftoken,
+                            "Content-type": "application/json",
+							"X-CSRFToken": csrftoken,
                         },
                         body: JSON.stringify({
                             orderID: orderID,
@@ -188,8 +189,12 @@
                         }),
                     })
                         // The followng two commented lines will be used later
-                        // .then(response => response.json())
-                        // .then(data => console.log(data));
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log('Success ', data);
+                            console.log('Transaction completed.');
+                            window.location.href = redirect_url + '?order_number='+data.order_number+'&payment_id='+data.transID;
+                        });
                 }
 
             });
